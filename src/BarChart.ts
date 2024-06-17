@@ -1,4 +1,5 @@
 import { type BarChartOption } from "./types";
+import { COLORS } from "./constants";
 import { createCanvas } from "./utility";
 
 class BarChart {
@@ -12,7 +13,6 @@ class BarChart {
   labelWidth: number;
   padding: { top: number; right: number; bottom: number; left: number };
   barPadding: { top: number; right: number; bottom: number; left: number };
-  colors: string[];
 
   currentTimeline: string;
 
@@ -31,7 +31,6 @@ class BarChart {
     this.labelWidth = 100;
     this.padding = { top: 20, right: 20, bottom: 20, left: 100 };
     this.barPadding = { top: 5, right: 0, bottom: 5, left: 0 };
-    this.colors = ["#084b83", "#42bfdd", "#ff7700", "#ed254e", "#f9dc5c"];
   }
   get currentData() {
     return this.data.map((d) => ({
@@ -113,7 +112,7 @@ class BarChart {
       const top = y + index * this.barHeight;
 
       this.ctx.beginPath();
-      this.ctx.fillStyle = this.colors[index];
+      this.ctx.fillStyle = COLORS[index];
       this.ctx.rect(x, top, barWidth, this.barHeight);
       this.ctx.fill();
       this.ctx.closePath();
