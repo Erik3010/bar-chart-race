@@ -75,30 +75,34 @@ class BarChart {
   }
   drawLabel(label: string, top: number) {
     const fontSize = 14;
+    const padding = 10;
 
     this.ctx.save();
     this.ctx.fillStyle = "#000";
     this.ctx.font = `${fontSize}px Arial`;
     this.ctx.textAlign = "right";
+    this.ctx.textBaseline = "middle";
     this.ctx.fillText(
       label,
-      this.labelWidth - 10,
-      top + fontSize / 2 + this.barHeight / 2
+      this.labelWidth - padding,
+      top + (this.barHeight + this.barPadding.top) / 2
     );
     this.ctx.restore();
   }
   drawNumLabel(label: string, top: number, width: number) {
     const fontSize = 14;
+    const padding = 10;
 
     this.ctx.save();
     this.ctx.fillStyle = "#fff";
     this.ctx.font = `${fontSize}px Arial`;
     this.ctx.textAlign = "right";
+    this.ctx.textBaseline = "middle";
 
     this.ctx.fillText(
       label,
-      width - 10,
-      top + fontSize / 2 + this.barHeight / 2
+      width - padding,
+      top + (this.barHeight + this.barPadding.top) / 2
     );
     this.ctx.restore();
   }
@@ -108,12 +112,16 @@ class BarChart {
     for (const [index, data] of this.currentData.entries()) {
       const ratio = data.population / this.largestCurrentData.population;
       const barWidth = width * ratio;
-
       const top = y + index * this.barHeight;
 
       this.ctx.beginPath();
       this.ctx.fillStyle = COLORS[index];
-      this.ctx.rect(x, top, barWidth, this.barHeight);
+      this.ctx.rect(
+        x,
+        top + this.barPadding.top,
+        barWidth,
+        this.barHeight - this.barPadding.bottom
+      );
       this.ctx.fill();
       this.ctx.closePath();
 
