@@ -5,6 +5,11 @@ class BarChart {
   ctx: CanvasRenderingContext2D;
   data: any[];
 
+  labelWidth: number;
+  padding: { top: number; right: number; bottom: number; left: number };
+  barPadding: { top: number; right: number; bottom: number; left: number };
+  colors: string[];
+
   currentTimeline: string;
 
   constructor({ canvas, data }: BarChartOption) {
@@ -12,18 +17,28 @@ class BarChart {
     this.ctx = canvas.getContext("2d")!;
     this.data = data;
 
+    this.labelWidth = 100;
+    this.padding = { top: 20, right: 20, bottom: 20, left: 100 };
+    this.barPadding = { top: 5, right: 0, bottom: 5, left: 0 };
+    this.colors = ["#084b83", "#42bfdd", "#ff7700", "#ed254e", "#f9dc5c"];
+
     this.currentTimeline = "2020";
+
+    // const dpi = window.devicePixelRatio;
+    // this.canvas.width = canvas.width * dpi;
+    // this.canvas.height = canvas.height * dpi;
+    // this.canvas.style.width = "800px";
+    // this.canvas.style.height = "400px";
+    // this.ctx.scale(dpi, dpi);
   }
 
   get currentData() {
-    return this.data.map((d) => {
-      return {
-        country: d.country,
-        population: d.populations.find(
-          (p: any) => p.year === this.currentTimeline
-        ).population,
-      };
-    });
+    return this.data.map((d) => ({
+      country: d.country,
+      population: d.populations.find(
+        (p: any) => p.year === this.currentTimeline
+      ).population,
+    }));
   }
 
   get largestCurrentData() {
@@ -33,25 +48,99 @@ class BarChart {
     );
   }
 
+  get chartArea() {
+    return {
+      x: this.padding.left,
+      y: this.padding.top,
+      width: this.canvas.width - this.padding.left - this.padding.right,
+      height: this.canvas.height - this.padding.top - this.padding.bottom,
+    };
+  }
+
+  get barHeight() {
+    return this.chartArea.height / this.data.length;
+  }
+
+  get label() {
+    return this.data.map((d) => d.country);
+  }
+
   init() {
     this.render();
-
-    console.log("data", this.currentData, this.largestCurrentData);
+    // this.runTimeline();
   }
 
-  drawBar() {
-    this.ctx.beginPath();
-    this.ctx.fillStyle = "red";
-    this.ctx.fillRect(0, 0, this.canvas.width, 50);
-    this.ctx.closePath();
+  runTimeline() {
+    // run temporary timeline
+    const years = ["2021", "2022", "2023", "2024"];
+    let index = 0;
+    setInterval(() => {
+      this.currentTimeline = years[index];
+      index = ++index % years.length;
+    }, 1000);
   }
+
+  drawLabel(label: string, top: number) {
+    const fontSize = 14;
+
+    this.ctx.save();
+    this.ctx.fillStyle = "#000";
+    this.ctx.font = `${fontSize}px Arial`;
+    this.ctx.textAlign = "right";
+    this.ctx.fillText(
+      label,
+      this.labelWidth - 10,
+      top + fontSize / 2 + this.barHeight / 2
+    );
+    this.ctx.restore();
+  }
+
+  drawNumLabel(label: string, top: number, width: number) {
+    const fontSize = 14;
+
+    this.ctx.save();
+    this.ctx.fillStyle = "#fff";
+    this.ctx.font = `${fontSize}px Arial`;
+    this.ctx.textAlign = "right";
+
+    this.ctx.fillText(
+      label,
+      width - 10,
+      top + fontSize / 2 + this.barHeight / 2
+    );
+    this.ctx.restore();
+  }
+
+  drawChart() {
+    const { x, y, width } = this.chartArea;
+    // const dpi = window.devicePixelRatio;
+    // this.ctx.scale(dpi, dpi);
+
+    for (const [index, data] of this.currentData.entries()) {
+      const ratio = data.population / this.largestCurrentData.population;
+      const barWidth = width * ratio;
+
+      const top = y + index * this.barHeight;
+
+      this.ctx.beginPath();
+      this.ctx.fillStyle = this.colors[index];
+      this.ctx.rect(x, top, barWidth, this.barHeight);
+      this.ctx.fill();
+      this.ctx.closePath();
+
+      this.drawLabel(data.country, top);
+      this.drawNumLabel(data.population, top, x + barWidth);
+    }
+  }
+
   draw() {
-    this.drawBar();
+    this.drawChart();
   }
+
   render() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
     this.draw();
+    // requestAnimationFrame(this.render.bind(this));
   }
 }
 
