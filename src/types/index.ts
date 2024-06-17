@@ -1,4 +1,6 @@
 export interface BarChartOption {
-  canvas: HTMLCanvasElement;
+  width: number;
+  height: number;
+  element: HTMLElement;
   data: any[];
 }

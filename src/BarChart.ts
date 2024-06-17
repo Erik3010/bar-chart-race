@@ -1,8 +1,12 @@
 import { type BarChartOption } from "./types";
+import { createCanvas } from "./utility";
 
 class BarChart {
+  element: HTMLElement;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
+  width: number;
+  height: number;
   data: any[];
 
   labelWidth: number;
@@ -12,26 +16,23 @@ class BarChart {
 
   currentTimeline: string;
 
-  constructor({ canvas, data }: BarChartOption) {
-    this.canvas = canvas;
-    this.ctx = canvas.getContext("2d")!;
+  constructor({ element, data, width, height }: BarChartOption) {
+    this.element = element;
+    this.width = width;
+    this.height = height;
+
     this.data = data;
+    this.currentTimeline = "2020";
+
+    this.canvas = createCanvas(this.width, this.height);
+    this.ctx = this.canvas.getContext("2d")!;
+    this.element.appendChild(this.canvas);
 
     this.labelWidth = 100;
     this.padding = { top: 20, right: 20, bottom: 20, left: 100 };
     this.barPadding = { top: 5, right: 0, bottom: 5, left: 0 };
     this.colors = ["#084b83", "#42bfdd", "#ff7700", "#ed254e", "#f9dc5c"];
-
-    this.currentTimeline = "2020";
-
-    // const dpi = window.devicePixelRatio;
-    // this.canvas.width = canvas.width * dpi;
-    // this.canvas.height = canvas.height * dpi;
-    // this.canvas.style.width = "800px";
-    // this.canvas.style.height = "400px";
-    // this.ctx.scale(dpi, dpi);
   }
-
   get currentData() {
     return this.data.map((d) => ({
       country: d.country,
@@ -40,36 +41,30 @@ class BarChart {
       ).population,
     }));
   }
-
   get largestCurrentData() {
     return this.currentData.reduce(
       (acc, cur) => (acc.population > cur.population ? acc : cur),
       this.currentData[0]
     );
   }
-
   get chartArea() {
     return {
       x: this.padding.left,
       y: this.padding.top,
-      width: this.canvas.width - this.padding.left - this.padding.right,
-      height: this.canvas.height - this.padding.top - this.padding.bottom,
+      width: this.width - this.padding.left - this.padding.right,
+      height: this.height - this.padding.top - this.padding.bottom,
     };
   }
-
   get barHeight() {
     return this.chartArea.height / this.data.length;
   }
-
   get label() {
     return this.data.map((d) => d.country);
   }
-
   init() {
     this.render();
     // this.runTimeline();
   }
-
   runTimeline() {
     // run temporary timeline
     const years = ["2021", "2022", "2023", "2024"];
@@ -79,7 +74,6 @@ class BarChart {
       index = ++index % years.length;
     }, 1000);
   }
-
   drawLabel(label: string, top: number) {
     const fontSize = 14;
 
@@ -94,7 +88,6 @@ class BarChart {
     );
     this.ctx.restore();
   }
-
   drawNumLabel(label: string, top: number, width: number) {
     const fontSize = 14;
 
@@ -110,11 +103,8 @@ class BarChart {
     );
     this.ctx.restore();
   }
-
   drawChart() {
     const { x, y, width } = this.chartArea;
-    // const dpi = window.devicePixelRatio;
-    // this.ctx.scale(dpi, dpi);
 
     for (const [index, data] of this.currentData.entries()) {
       const ratio = data.population / this.largestCurrentData.population;
@@ -132,13 +122,11 @@ class BarChart {
       this.drawNumLabel(data.population, top, x + barWidth);
     }
   }
-
   draw() {
     this.drawChart();
   }
-
   render() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.clearRect(0, 0, this.width, this.height);
     this.draw();
     // requestAnimationFrame(this.render.bind(this));
   }
