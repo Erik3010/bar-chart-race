@@ -1,6 +1,7 @@
 import { type BarChartOption } from "./types";
 import { COLORS } from "./constants";
 import { createCanvas } from "./utility";
+import Bar from "./elements/Bar";
 
 class BarChart {
   element: HTMLElement;
@@ -16,6 +17,8 @@ class BarChart {
 
   currentTimeline: string;
 
+  bars: Bar[];
+
   constructor({ element, data, width, height }: BarChartOption) {
     this.element = element;
     this.width = width;
@@ -26,11 +29,12 @@ class BarChart {
 
     this.canvas = createCanvas(this.width, this.height);
     this.ctx = this.canvas.getContext("2d")!;
-    this.element.appendChild(this.canvas);
 
     this.labelWidth = 100;
     this.padding = { top: 20, right: 20, bottom: 20, left: 100 };
     this.barPadding = { top: 5, right: 0, bottom: 5, left: 0 };
+
+    this.bars = [];
   }
   get currentData() {
     return this.data.map((d) => ({
@@ -61,6 +65,10 @@ class BarChart {
     return this.data.map((d) => d.country);
   }
   init() {
+    this.element.appendChild(this.canvas);
+
+    this.initBar();
+
     this.render();
     // this.runTimeline();
   }
@@ -71,66 +79,52 @@ class BarChart {
     setInterval(() => {
       this.currentTimeline = years[index];
       index = ++index % years.length;
+      this.updateBars();
     }, 1000);
   }
-  drawLabel(label: string, top: number) {
-    const fontSize = 14;
-    const padding = 10;
-
-    this.ctx.save();
-    this.ctx.fillStyle = "#000";
-    this.ctx.font = `${fontSize}px Arial`;
-    this.ctx.textAlign = "right";
-    this.ctx.textBaseline = "middle";
-    this.ctx.fillText(
-      label,
-      this.labelWidth - padding,
-      top + (this.barHeight + this.barPadding.top) / 2
-    );
-    this.ctx.restore();
+  initBar() {
+    for (const [index, data] of this.currentData.entries()) {
+      const bar = this.createBar(data, index);
+      this.bars.push(bar);
+    }
   }
-  drawNumLabel(label: string, top: number, width: number) {
-    const fontSize = 14;
-    const padding = 10;
-
-    this.ctx.save();
-    this.ctx.fillStyle = "#fff";
-    this.ctx.font = `${fontSize}px Arial`;
-    this.ctx.textAlign = "right";
-    this.ctx.textBaseline = "middle";
-
-    this.ctx.fillText(
-      label,
-      width - padding,
-      top + (this.barHeight + this.barPadding.top) / 2
-    );
-    this.ctx.restore();
-  }
-  drawChart() {
+  createBar(data: { country: string; population: number }, index: number) {
     const { x, y, width } = this.chartArea;
 
-    for (const [index, data] of this.currentData.entries()) {
-      const ratio = data.population / this.largestCurrentData.population;
-      const barWidth = width * ratio;
-      const top = y + index * this.barHeight;
+    const ratio = data.population / this.largestCurrentData.population;
+    const barWidth = width * ratio;
+    const top = y + index * this.barHeight;
 
-      this.ctx.beginPath();
-      this.ctx.fillStyle = COLORS[index];
-      this.ctx.rect(
-        x,
-        top + this.barPadding.top,
-        barWidth,
-        this.barHeight - this.barPadding.bottom
+    return new Bar({
+      ctx: this.ctx,
+      x,
+      y: top,
+      width: barWidth,
+      height: this.barHeight,
+      color: COLORS[index],
+      label: data.country,
+      value: data.population,
+    });
+  }
+  updateBars() {
+    const { width } = this.chartArea;
+
+    for (const bar of this.bars) {
+      const value = this.currentData.find(
+        ({ country }) => country === bar.label
       );
-      this.ctx.fill();
-      this.ctx.closePath();
+      if (!value) continue;
 
-      this.drawLabel(data.country, top);
-      this.drawNumLabel(data.population, top, x + barWidth);
+      const ratio = value.population / this.largestCurrentData.population;
+
+      bar.value = value.population;
+      bar.width = width * ratio;
     }
   }
   draw() {
-    this.drawChart();
+    for (const bar of this.bars) {
+      bar.draw();
+    }
   }
   render() {
     this.ctx.clearRect(0, 0, this.width, this.height);
