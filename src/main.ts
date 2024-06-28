@@ -1,6 +1,6 @@
 import "./styles/index.css";
-import BarChart from "./BarChart";
 import data from "./data/data.json";
+import BarChart from "./BarChart";
 
 const barChart = new BarChart({
   element: document.querySelector("#app")!,
