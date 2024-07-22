@@ -1,6 +1,6 @@
 import { type BarChartOption } from "./types";
-import { COLORS } from "./constants";
 import { createCanvas } from "./utility";
+import { COLORS } from "./constants";
 import Bar from "./elements/Bar";
 
 class BarChart {
