@@ -11,9 +11,7 @@ class BarChart {
   height: number;
   data: any[];
 
-  labelWidth: number;
   padding: { top: number; right: number; bottom: number; left: number };
-  barPadding: { top: number; right: number; bottom: number; left: number };
 
   currentTimeline: string;
 
@@ -30,9 +28,7 @@ class BarChart {
     this.canvas = createCanvas(this.width, this.height);
     this.ctx = this.canvas.getContext("2d")!;
 
-    this.labelWidth = 100;
     this.padding = { top: 20, right: 20, bottom: 20, left: 100 };
-    this.barPadding = { top: 5, right: 0, bottom: 5, left: 0 };
 
     this.bars = [];
   }
@@ -61,28 +57,24 @@ class BarChart {
   get barHeight() {
     return this.chartArea.height / this.data.length;
   }
-  get label() {
-    return this.data.map((d) => d.country);
-  }
   init() {
     this.element.appendChild(this.canvas);
 
-    this.initBar();
-
+    this.initChart();
     this.render();
-    // this.runTimeline();
+    this.runTimeline();
   }
   runTimeline() {
     // run temporary timeline
-    const years = ["2021", "2022", "2023", "2024"];
-    let index = 0;
+    const years = ["2020", "2021", "2022", "2023", "2024"];
+    let index = 1;
     setInterval(() => {
       this.currentTimeline = years[index];
       index = ++index % years.length;
       this.updateBars();
     }, 1000);
   }
-  initBar() {
+  initChart() {
     for (const [index, data] of this.currentData.entries()) {
       const bar = this.createBar(data, index);
       this.bars.push(bar);
@@ -121,7 +113,18 @@ class BarChart {
       bar.width = width * ratio;
     }
   }
+  drawCurrentTimelineLabel() {
+    this.ctx.save();
+    this.ctx.fillStyle = "#000";
+    this.ctx.font = "24px Arial";
+    this.ctx.textAlign = "right";
+    this.ctx.textBaseline = "top";
+    this.ctx.fillText(this.currentTimeline, this.width - 10, 10);
+    this.ctx.restore();
+  }
   draw() {
+    this.drawCurrentTimelineLabel();
+
     for (const bar of this.bars) {
       bar.draw();
     }
@@ -129,7 +132,7 @@ class BarChart {
   render() {
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.draw();
-    // requestAnimationFrame(this.render.bind(this));
+    requestAnimationFrame(this.render.bind(this));
   }
 }
 

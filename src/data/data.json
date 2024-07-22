@@ -2,51 +2,51 @@
   {
     "country": "USA",
     "populations": [
-      { "year": "2020", "population": 331 },
-      { "year": "2021", "population": 334 },
-      { "year": "2022", "population": 337 },
-      { "year": "2023", "population": 340 },
-      { "year": "2024", "population": 343 }
+      { "year": "2020", "population": 267 },
+      { "year": "2021", "population": 426 },
+      { "year": "2022", "population": 302 },
+      { "year": "2023", "population": 432 },
+      { "year": "2024", "population": 279 }
     ]
   },
   {
     "country": "China",
     "populations": [
-      { "year": "2020", "population": 1441 },
-      { "year": "2021", "population": 1446 },
-      { "year": "2022", "population": 1451 },
-      { "year": "2023", "population": 1456 },
-      { "year": "2024", "population": 1461 }
+      { "year": "2020", "population": 1883 },
+      { "year": "2021", "population": 1340 },
+      { "year": "2022", "population": 1748 },
+      { "year": "2023", "population": 1838 },
+      { "year": "2024", "population": 1271 }
     ]
   },
   {
     "country": "India",
     "populations": [
-      { "year": "2020", "population": 1380 },
-      { "year": "2021", "population": 1390 },
-      { "year": "2022", "population": 1400 },
-      { "year": "2023", "population": 1410 },
-      { "year": "2024", "population": 1420 }
+      { "year": "2020", "population": 1518 },
+      { "year": "2021", "population": 1182 },
+      { "year": "2022", "population": 1596 },
+      { "year": "2023", "population": 1572 },
+      { "year": "2024", "population": 1225 }
     ]
   },
   {
     "country": "Brazil",
     "populations": [
-      { "year": "2020", "population": 212 },
-      { "year": "2021", "population": 213 },
-      { "year": "2022", "population": 214 },
-      { "year": "2023", "population": 215 },
-      { "year": "2024", "population": 216 }
+      { "year": "2020", "population": 191 },
+      { "year": "2021", "population": 243 },
+      { "year": "2022", "population": 222 },
+      { "year": "2023", "population": 253 },
+      { "year": "2024", "population": 165 }
     ]
   },
   {
     "country": "Pakistan",
     "populations": [
-      { "year": "2020", "population": 220 },
-      { "year": "2021", "population": 222 },
-      { "year": "2022", "population": 224 },
-      { "year": "2023", "population": 226 },
-      { "year": "2024", "population": 228 }
+      { "year": "2020", "population": 173 },
+      { "year": "2021", "population": 219 },
+      { "year": "2022", "population": 187 },
+      { "year": "2023", "population": 182 },
+      { "year": "2024", "population": 179 }
     ]
   }
 ]
