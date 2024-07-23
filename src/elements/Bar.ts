@@ -57,6 +57,9 @@ class Bar {
     );
     this.ctx.restore();
   }
+  animate(step: number) {
+    console.log("step", step);
+  }
 }
 
 export default Bar;

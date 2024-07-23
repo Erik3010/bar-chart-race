@@ -9,11 +9,13 @@ class BarChart {
   ctx: CanvasRenderingContext2D;
   width: number;
   height: number;
+
   data: any[];
+  timelineKeys: string[];
+  currentTimelineIndex: number;
+  timelineStepDuration: number;
 
   padding: { top: number; right: number; bottom: number; left: number };
-
-  currentTimeline: string;
 
   bars: Bar[];
 
@@ -23,7 +25,9 @@ class BarChart {
     this.height = height;
 
     this.data = data;
-    this.currentTimeline = "2020";
+    this.timelineKeys = data[0].populations.map((p: any) => p.year);
+    this.currentTimelineIndex = 0;
+    this.timelineStepDuration = 1;
 
     this.canvas = createCanvas(this.width, this.height);
     this.ctx = this.canvas.getContext("2d")!;
@@ -36,9 +40,17 @@ class BarChart {
     return this.data.map((d) => ({
       country: d.country,
       population: d.populations.find(
-        (p: any) => p.year === this.currentTimeline
+        (p: any) => p.year === this.currentTimelineKey
       ).population,
     }));
+  }
+  get currentTimelineKey() {
+    return this.timelineKeys[this.currentTimelineIndex];
+  }
+  get nextTimelineKey() {
+    const nextIndex =
+      (this.currentTimelineIndex + 1) % this.timelineKeys.length;
+    return this.timelineKeys[nextIndex];
   }
   get largestCurrentData() {
     return this.currentData.reduce(
@@ -66,12 +78,10 @@ class BarChart {
   }
   runTimeline() {
     // run temporary timeline
-    const years = ["2020", "2021", "2022", "2023", "2024"];
-    let index = 1;
     setInterval(() => {
-      this.currentTimeline = years[index];
-      index = ++index % years.length;
-      this.updateBars();
+      this.currentTimelineIndex =
+        ++this.currentTimelineIndex % this.timelineKeys.length;
+      // this.updateBars();
     }, 1000);
   }
   initChart() {
@@ -119,7 +129,7 @@ class BarChart {
     this.ctx.font = "24px Arial";
     this.ctx.textAlign = "right";
     this.ctx.textBaseline = "top";
-    this.ctx.fillText(this.currentTimeline, this.width - 10, 10);
+    this.ctx.fillText(this.currentTimelineKey, this.width - 10, 10);
     this.ctx.restore();
   }
   draw() {
