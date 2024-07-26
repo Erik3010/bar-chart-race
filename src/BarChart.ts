@@ -48,8 +48,9 @@ class BarChart {
     return this.timelineKeys[this.currentTimelineIndex];
   }
   get nextTimelineKey() {
-    const nextIndex =
-      (this.currentTimelineIndex + 1) % this.timelineKeys.length;
+    const nextIndex = this.currentTimelineIndex + 1;
+
+    if (nextIndex >= this.timelineKeys.length) return null;
     return this.timelineKeys[nextIndex];
   }
   get largestCurrentData() {
@@ -76,13 +77,24 @@ class BarChart {
     this.render();
     this.runTimeline();
   }
-  runTimeline() {
+  async runTimeline() {
+    // while (this.nextTimelineKey) {
+    //   this.currentTimelineIndex++;
+    // }
+    // await Promise.all(this.bars.map((bar) => bar.animate(100)));
+
+    const callbacks = this.bars.map((bar) => {
+      return bar.animate(100);
+    });
+    await Promise.all(callbacks);
+    console.log("done");
+
     // run temporary timeline
-    setInterval(() => {
-      this.currentTimelineIndex =
-        ++this.currentTimelineIndex % this.timelineKeys.length;
-      // this.updateBars();
-    }, 1000);
+    // setInterval(() => {
+    //   this.currentTimelineIndex =
+    //     ++this.currentTimelineIndex % this.timelineKeys.length;
+    //   // this.updateBars();
+    // }, 1000);
   }
   initChart() {
     for (const [index, data] of this.currentData.entries()) {

@@ -57,8 +57,13 @@ class Bar {
     );
     this.ctx.restore();
   }
-  animate(step: number) {
-    console.log("step", step);
+  async animate(step: number) {
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        console.log("step", step);
+        resolve();
+      }, 1000);
+    });
   }
 }
 
