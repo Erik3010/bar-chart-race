@@ -16,3 +16,12 @@ export const createCanvas = (width: number, height: number) => {
 
 export const random = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
+
+export const lerp = (from: number, to: number, t: number) =>
+  from + (to - from) * t;
+
+export const smootherStep = (t: number) =>
+  Math.pow(t, 3) * (t * (t * 6 - 15) + 10);
+
+export const sleep = async (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));

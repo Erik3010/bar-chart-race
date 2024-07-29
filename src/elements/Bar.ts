@@ -1,4 +1,5 @@
 import { BarOption, Padding } from "../types";
+import { lerp, smootherStep } from "../utility";
 
 class Bar {
   ctx: CanvasRenderingContext2D;
@@ -13,6 +14,8 @@ class Bar {
 
   padding: Padding = { top: 5, right: 0, bottom: 5, left: 0 };
   labelProps = { font: "Arial", fontSize: 14, padding: 10 };
+
+  animationSpeed = 0.02;
 
   constructor({ ctx, x, y, width, height, color, label, value }: BarOption) {
     this.ctx = ctx;
@@ -57,12 +60,33 @@ class Bar {
     );
     this.ctx.restore();
   }
-  async animate(step: number) {
+  async animateTo(nextWidth: number, nextValue: number) {
     return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        console.log("step", step);
-        resolve();
-      }, 1000);
+      const originalValue = this.value;
+      const originalWidth = this.width;
+
+      let interpolation = 0;
+
+      const animate = () => {
+        if (Number(this.width.toFixed(0)) === Number(nextWidth.toFixed(0))) {
+          this.width = nextWidth;
+          this.value = nextValue;
+          return resolve();
+        }
+
+        const fraction = smootherStep(interpolation);
+
+        const newWidth = lerp(originalWidth, nextWidth, fraction);
+        this.width = newWidth;
+
+        const newValue = lerp(originalValue, nextValue, fraction);
+        this.value = Number(newValue.toFixed(0));
+
+        interpolation += this.animationSpeed;
+        requestAnimationFrame(animate);
+      };
+
+      animate();
     });
   }
 }
