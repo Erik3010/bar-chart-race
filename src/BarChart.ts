@@ -26,6 +26,7 @@ class BarChart {
 
     this.data = data;
     this.timelineKeys = data[0].populations.map((p: any) => p.year);
+    // this.timelineKeys = data[0].populations.map((p: any) => p.year).slice(0, 1);
     this.currentTimelineIndex = -1;
     this.timelineStepDuration = 1;
 
@@ -88,6 +89,9 @@ class BarChart {
   get barHeight() {
     return this.chartArea.height / this.data.length;
   }
+  get sortedData() {
+    return [];
+  }
   init() {
     this.element.appendChild(this.canvas);
 
@@ -110,8 +114,6 @@ class BarChart {
       });
       await Promise.all(callbacks);
       await sleep(250);
-
-      console.log("first phase animation done");
 
       this.currentTimelineIndex++;
     }
