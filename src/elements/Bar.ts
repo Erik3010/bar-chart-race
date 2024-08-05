@@ -60,10 +60,11 @@ class Bar {
     );
     this.ctx.restore();
   }
-  async animateTo(nextWidth: number, nextValue: number) {
+  async animateTo(nextWidth: number, nextValue: number, nextY: number) {
     return new Promise<void>((resolve) => {
       const originalValue = this.value;
       const originalWidth = this.width;
+      const originalY = this.y;
 
       const startTime = performance.now();
 
@@ -75,6 +76,7 @@ class Bar {
         if (interpolation >= 1) {
           this.width = nextWidth;
           this.value = nextValue;
+          this.y = nextY;
           return resolve();
         }
 
@@ -86,12 +88,41 @@ class Bar {
         const newValue = lerp(originalValue, nextValue, fraction);
         this.value = Number(newValue.toFixed(0));
 
+        const newY = lerp(originalY, nextY, fraction);
+        this.y = newY;
+
         requestAnimationFrame(animate);
       };
 
       animate();
     });
   }
+  // async animateYPos(nextY: number) {
+  //   return new Promise<void>((resolve) => {
+  //     const originalY = this.y;
+  //     const startTime = performance.now();
+
+  //     const animate = () => {
+  //       const currentTime = performance.now();
+  //       const elapsedTime = currentTime - startTime;
+  //       const interpolation = elapsedTime / this.duration;
+
+  //       if (interpolation >= 1) {
+  //         this.y = nextY;
+  //         return resolve();
+  //       }
+
+  //       const fraction = smootherStep(interpolation);
+
+  //       const newY = lerp(originalY, nextY, fraction);
+  //       this.y = newY;
+
+  //       requestAnimationFrame(animate);
+  //     };
+
+  //     animate();
+  //   });
+  // }
 }
 
 export default Bar;

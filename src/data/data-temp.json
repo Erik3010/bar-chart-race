@@ -1,0 +1,82 @@
+[
+  {
+    "country": "USA",
+    "populations": [
+      { "year": 2025, "population": 452 },
+      { "year": 2026, "population": 487 },
+      { "year": 2027, "population": 561 },
+      { "year": 2028, "population": 424 },
+      { "year": 2029, "population": 417 },
+      { "year": 2030, "population": 257 },
+      { "year": 2031, "population": 339 },
+      { "year": 2032, "population": 289 },
+      { "year": 2033, "population": 410 },
+      { "year": 2034, "population": 526 },
+      { "year": 2035, "population": 511 }
+    ]
+  },
+  {
+    "country": "China",
+    "populations": [
+      { "year": 2025, "population": 1366 },
+      { "year": 2026, "population": 1264 },
+      { "year": 2027, "population": 1424 },
+      { "year": 2028, "population": 1259 },
+      { "year": 2029, "population": 1082 },
+      { "year": 2030, "population": 1220 },
+      { "year": 2031, "population": 1136 },
+      { "year": 2032, "population": 1331 },
+      { "year": 2033, "population": 1279 },
+      { "year": 2034, "population": 1119 },
+      { "year": 2035, "population": 1038 }
+    ]
+  },
+  {
+    "country": "India",
+    "populations": [
+      { "year": 2025, "population": 1076 },
+      { "year": 2026, "population": 1070 },
+      { "year": 2027, "population": 1012 },
+      { "year": 2028, "population": 1044 },
+      { "year": 2029, "population": 1169 },
+      { "year": 2030, "population": 1155 },
+      { "year": 2031, "population": 1038 },
+      { "year": 2032, "population": 1027 },
+      { "year": 2033, "population": 1008 },
+      { "year": 2034, "population": 915 },
+      { "year": 2035, "population": 1058 }
+    ]
+  },
+  {
+    "country": "Brazil",
+    "populations": [
+      { "year": 2025, "population": 941 },
+      { "year": 2026, "population": 1100 },
+      { "year": 2027, "population": 1249 },
+      { "year": 2028, "population": 1380 },
+      { "year": 2029, "population": 1216 },
+      { "year": 2030, "population": 1327 },
+      { "year": 2031, "population": 1452 },
+      { "year": 2032, "population": 1339 },
+      { "year": 2033, "population": 1412 },
+      { "year": 2034, "population": 1585 },
+      { "year": 2035, "population": 1510 }
+    ]
+  },
+  {
+    "country": "Pakistan",
+    "populations": [
+      { "year": 2025, "population": 100 },
+      { "year": 2026, "population": 136 },
+      { "year": 2027, "population": 130 },
+      { "year": 2028, "population": 100 },
+      { "year": 2029, "population": 227 },
+      { "year": 2030, "population": 379 },
+      { "year": 2031, "population": 464 },
+      { "year": 2032, "population": 376 },
+      { "year": 2033, "population": 526 },
+      { "year": 2034, "population": 492 },
+      { "year": 2035, "population": 685 }
+    ]
+  }
+]

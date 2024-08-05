@@ -32,3 +32,7 @@ export const smootherStep = (t: number) =>
 
 export const sleep = async (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
+
+export const sortDescending = (
+  data: { country: string; population: number }[]
+) => structuredClone(data).sort((a, b) => b.population - a.population);
