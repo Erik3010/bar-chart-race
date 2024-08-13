@@ -62,9 +62,9 @@ class Bar {
   }
   async animateTo(nextWidth: number, nextValue: number, nextY: number) {
     return new Promise<void>((resolve) => {
+      const originalY = this.y;
       const originalValue = this.value;
       const originalWidth = this.width;
-      const originalY = this.y;
 
       const startTime = performance.now();
 
