@@ -1,8 +1,20 @@
+export interface Dataset {
+  date: string;
+  value: number;
+}
+
+export type Datasets = Dataset[];
+
+export interface DataType {
+  label: string;
+  datasets: Datasets;
+}
+
 export interface BarChartOption {
   width: number;
   height: number;
   element: HTMLElement;
-  data: any[];
+  data: DataType[];
 }
 
 export interface BarOption {

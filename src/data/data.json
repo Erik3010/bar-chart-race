@@ -1,52 +1,52 @@
 [
   {
-    "country": "USA",
-    "populations": [
-      { "year": "2020", "population": 267 },
-      { "year": "2021", "population": 426 },
-      { "year": "2022", "population": 302 },
-      { "year": "2023", "population": 432 },
-      { "year": "2024", "population": 279 }
+    "label": "USA",
+    "datasets": [
+      { "date": "2020", "value": 267 },
+      { "date": "2021", "value": 426 },
+      { "date": "2022", "value": 302 },
+      { "date": "2023", "value": 432 },
+      { "date": "2024", "value": 279 }
     ]
   },
   {
-    "country": "China",
-    "populations": [
-      { "year": "2020", "population": 1883 },
-      { "year": "2021", "population": 1340 },
-      { "year": "2022", "population": 1748 },
-      { "year": "2023", "population": 1838 },
-      { "year": "2024", "population": 1271 }
+    "label": "China",
+    "datasets": [
+      { "date": "2020", "value": 1883 },
+      { "date": "2021", "value": 1340 },
+      { "date": "2022", "value": 1748 },
+      { "date": "2023", "value": 1838 },
+      { "date": "2024", "value": 1271 }
     ]
   },
   {
-    "country": "India",
-    "populations": [
-      { "year": "2020", "population": 1518 },
-      { "year": "2021", "population": 1182 },
-      { "year": "2022", "population": 1596 },
-      { "year": "2023", "population": 1572 },
-      { "year": "2024", "population": 1225 }
+    "label": "India",
+    "datasets": [
+      { "date": "2020", "value": 1518 },
+      { "date": "2021", "value": 1182 },
+      { "date": "2022", "value": 1596 },
+      { "date": "2023", "value": 1572 },
+      { "date": "2024", "value": 1225 }
     ]
   },
   {
-    "country": "Brazil",
-    "populations": [
-      { "year": "2020", "population": 191 },
-      { "year": "2021", "population": 243 },
-      { "year": "2022", "population": 2000 },
-      { "year": "2023", "population": 2553 },
-      { "year": "2024", "population": 1005 }
+    "label": "Brazil",
+    "datasets": [
+      { "date": "2020", "value": 191 },
+      { "date": "2021", "value": 243 },
+      { "date": "2022", "value": 2000 },
+      { "date": "2023", "value": 2553 },
+      { "date": "2024", "value": 1005 }
     ]
   },
   {
-    "country": "Pakistan",
-    "populations": [
-      { "year": "2020", "population": 173 },
-      { "year": "2021", "population": 219 },
-      { "year": "2022", "population": 187 },
-      { "year": "2023", "population": 182 },
-      { "year": "2024", "population": 179 }
+    "label": "Pakistan",
+    "datasets": [
+      { "date": "2020", "value": 173 },
+      { "date": "2021", "value": 219 },
+      { "date": "2022", "value": 187 },
+      { "date": "2023", "value": 182 },
+      { "date": "2024", "value": 179 }
     ]
   }
 ]
