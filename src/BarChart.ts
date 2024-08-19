@@ -1,5 +1,5 @@
 import { type BarChartOption } from "./types";
-import { createCanvas, sleep, sortDescending } from "./utility";
+import { createCanvas, sleep } from "./utility";
 import { COLORS } from "./constants";
 import Bar from "./elements/Bar";
 
@@ -13,7 +13,6 @@ class BarChart {
   data: any[];
   timelineKeys: string[];
   currentTimelineIndex: number;
-  timelineStepDuration: number;
 
   padding: { top: number; right: number; bottom: number; left: number };
 
@@ -28,7 +27,6 @@ class BarChart {
     this.timelineKeys = data[0].populations.map((p: any) => p.year);
     // this.timelineKeys = data[0].populations.map((p: any) => p.year).slice(0, 1);
     this.currentTimelineIndex = -1;
-    this.timelineStepDuration = 1;
 
     this.canvas = createCanvas(this.width, this.height);
     this.ctx = this.canvas.getContext("2d")!;
@@ -98,34 +96,43 @@ class BarChart {
   }
   async runTimeline() {
     while (this.nextTimelineKey) {
-      const initialYPos = this.bars.map((bar) => bar.y).sort((a, b) => a - b);
-
       const callbacks = this.bars.map((bar) => {
         const nextBarData = this.nextData?.find(
           (data) => data.country === bar.label
         );
 
-        // const currentPosition = this.getPosition(bar.label);
-        const nextPosition = this.getPosition(bar.label, this.nextData!);
-        const nextY = initialYPos[nextPosition];
-
         const largestPopulation = Math.max(this.largestNextData!.population, 1);
         const ratio = nextBarData!.population / largestPopulation;
         const barWidth = this.chartArea.width * ratio;
 
-        return bar.animateTo(barWidth, nextBarData!.population, nextY);
+        return bar.animateTo(barWidth, nextBarData!.population);
       });
       await Promise.all(callbacks);
-      await sleep(250);
+      await sleep(100);
 
       this.currentTimelineIndex++;
     }
   }
-  initChart() {
-    // const datum = this.currentData.slice(0, 1);
-    // const datum = this.currentData;
-    const datum = sortDescending(this.currentData);
+  sortBarChart() {
+    for (let i = 0; i < this.bars.length; i++) {
+      const currentBar = this.bars[i];
+      const previousBar = this.bars[i - 1];
+      if (
+        previousBar &&
+        !currentBar.swapping &&
+        !previousBar.swapping &&
+        currentBar.value > previousBar.value
+      ) {
+        currentBar.swapBar(previousBar.y);
+        previousBar.swapBar(currentBar.y);
 
+        this.bars[i] = previousBar;
+        this.bars[i - 1] = currentBar;
+      }
+    }
+  }
+  initChart() {
+    const datum = this.currentData;
     for (const [index, data] of datum.entries()) {
       const bar = this.createBar(data, index);
       this.bars.push(bar);
@@ -151,9 +158,6 @@ class BarChart {
       value: data.population,
     });
   }
-  getPosition(country: string, data = this.currentData) {
-    return sortDescending(data).findIndex((d) => d.country === country);
-  }
   drawTimelineLabel() {
     const timelineLabelText = this.nextTimelineKey || this.lastTimelineKey;
 
@@ -166,6 +170,7 @@ class BarChart {
     this.ctx.restore();
   }
   draw() {
+    this.sortBarChart();
     for (const bar of this.bars) {
       bar.draw();
     }

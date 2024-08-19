@@ -1,5 +1,5 @@
 import { BarOption, Padding } from "../types";
-import { lerp, smootherStep } from "../utility";
+import { animate } from "../utility/animation";
 
 class Bar {
   ctx: CanvasRenderingContext2D;
@@ -15,7 +15,7 @@ class Bar {
   padding: Padding = { top: 5, right: 0, bottom: 5, left: 0 };
   labelProps = { font: "Arial", fontSize: 14, padding: 10 };
 
-  duration = 750;
+  swapping = false;
 
   constructor({ ctx, x, y, width, height, color, label, value }: BarOption) {
     this.ctx = ctx;
@@ -60,69 +60,33 @@ class Bar {
     );
     this.ctx.restore();
   }
-  async animateTo(nextWidth: number, nextValue: number, nextY: number) {
-    return new Promise<void>((resolve) => {
-      const originalY = this.y;
-      const originalValue = this.value;
-      const originalWidth = this.width;
-
-      const startTime = performance.now();
-
-      const animate = () => {
-        const currentTime = performance.now();
-        const elapsedTime = currentTime - startTime;
-        const interpolation = elapsedTime / this.duration;
-
-        if (interpolation >= 1) {
-          this.width = nextWidth;
-          this.value = nextValue;
-          this.y = nextY;
-          return resolve();
-        }
-
-        const fraction = smootherStep(interpolation);
-
-        const newWidth = lerp(originalWidth, nextWidth, fraction);
-        this.width = newWidth;
-
-        const newValue = lerp(originalValue, nextValue, fraction);
-        this.value = Number(newValue.toFixed(0));
-
-        const newY = lerp(originalY, nextY, fraction);
-        this.y = newY;
-
-        requestAnimationFrame(animate);
-      };
-
-      animate();
+  async animateTo(nextWidth: number, nextValue: number) {
+    await animate<{ width: number; value: number }>({
+      duration: 2500,
+      initialValues: { width: this.width, value: this.value },
+      targetValues: { width: nextWidth, value: nextValue },
+      onUpdate: ({ width, value }) => {
+        this.width = width;
+        this.value = Number(value.toFixed(0));
+      },
     });
+
+    this.width = nextWidth;
+    this.value = nextValue;
   }
-  // async animateYPos(nextY: number) {
-  //   return new Promise<void>((resolve) => {
-  //     const originalY = this.y;
-  //     const startTime = performance.now();
+  async swapBar(nextY: number) {
+    this.swapping = true;
 
-  //     const animate = () => {
-  //       const currentTime = performance.now();
-  //       const elapsedTime = currentTime - startTime;
-  //       const interpolation = elapsedTime / this.duration;
+    await animate<{ y: number }>({
+      duration: 300,
+      initialValues: { y: this.y },
+      targetValues: { y: nextY },
+      onUpdate: ({ y }) => (this.y = y),
+    });
 
-  //       if (interpolation >= 1) {
-  //         this.y = nextY;
-  //         return resolve();
-  //       }
-
-  //       const fraction = smootherStep(interpolation);
-
-  //       const newY = lerp(originalY, nextY, fraction);
-  //       this.y = newY;
-
-  //       requestAnimationFrame(animate);
-  //     };
-
-  //     animate();
-  //   });
-  // }
+    this.y = nextY;
+    this.swapping = false;
+  }
 }
 
 export default Bar;

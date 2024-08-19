@@ -17,19 +17,6 @@ export const createCanvas = (width: number, height: number) => {
 export const random = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
-export const lerp = (from: number, to: number, t: number) =>
-  from + (to - from) * t;
-
-/**
- * Computes a smooth interpolation value based on the input parameter t.
- * This function uses the polynomial 6t^5 - 15t^4 + 10t^3 to produce a smooth curve.
- *
- * @param t - A value in the range [0, 1] representing the interpolation factor.
- * @returns A value in the range [0, 1] representing the interpolated result.
- */
-export const smootherStep = (t: number) =>
-  Math.pow(t, 3) * (t * (t * 6 - 15) + 10);
-
 export const sleep = async (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
