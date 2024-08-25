@@ -6,7 +6,6 @@ export const COLORS = [
   "#f9dc5c",
   "#277AEE",
   "#5b1865",
-  "#eff1f3",
   "#e01a4f",
   "#81c14b",
 ];

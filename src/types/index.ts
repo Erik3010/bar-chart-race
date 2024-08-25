@@ -1,3 +1,17 @@
+export interface Dimension {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface Padding {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
 export interface Dataset {
   date: string;
   value: number;
@@ -10,6 +24,10 @@ export interface DataType {
   datasets: Datasets;
 }
 
+export interface Drawable {
+  ctx: CanvasRenderingContext2D;
+}
+
 export interface BarChartOption {
   width: number;
   height: number;
@@ -17,8 +35,7 @@ export interface BarChartOption {
   data: DataType[];
 }
 
-export interface BarOption {
-  ctx: CanvasRenderingContext2D;
+export interface BarOption extends Drawable {
   x: number;
   y: number;
   width: number;
@@ -28,9 +45,13 @@ export interface BarOption {
   value: number;
 }
 
-export interface Padding {
-  top: number;
-  right: number;
-  bottom: number;
-  left: number;
+export interface TimelineBarOption extends Drawable {
+  chartDimension: Dimension;
+}
+
+export interface DrawBarLabelOption {
+  text: string;
+  startX: number;
+  color: string;
+  clampStart?: boolean;
 }

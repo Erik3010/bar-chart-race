@@ -1,5 +1,6 @@
-import { BarOption, Padding } from "../types";
+import { BarOption, DrawBarLabelOption, Padding } from "../types";
 import { animate } from "../utility/animation";
+import { clamp, computeTextWidth, formatNumber } from "../utility";
 
 class Bar {
   ctx: CanvasRenderingContext2D;
@@ -32,11 +33,18 @@ class Bar {
   draw() {
     this.drawBar();
 
-    this.drawLabel(this.label, this.x, "#000");
-    this.drawLabel(this.value.toString(), this.x + this.width, "#fff");
+    this.drawLabel({ text: this.label, startX: this.x, color: "#000" });
+    this.drawLabel({
+      text: formatNumber(this.value),
+      startX: this.x + this.width,
+      color: "#fff",
+      clampStart: true,
+    });
   }
   drawBar() {
+    this.ctx.save();
     this.ctx.beginPath();
+    this.ctx.globalAlpha = 0.9;
     this.ctx.fillStyle = this.color;
     this.ctx.rect(
       this.x,
@@ -46,18 +54,27 @@ class Bar {
     );
     this.ctx.fill();
     this.ctx.closePath();
+    this.ctx.restore();
   }
-  drawLabel(text: string, xOffset: number, color: string) {
+  drawLabel({ text, startX, color, clampStart = false }: DrawBarLabelOption) {
+    const { font, fontSize, padding } = this.labelProps;
+
+    const labelX = startX - padding;
+    const labelY = this.y + (this.height + this.padding.top) / 2;
+
+    const fontStyle = `${fontSize}px ${font}`;
+    const textWidth = computeTextWidth(text, fontStyle);
+
+    const finalX = clampStart
+      ? clamp(labelX, this.x + padding + textWidth, Infinity)
+      : labelX;
+
     this.ctx.save();
     this.ctx.fillStyle = color;
-    this.ctx.font = `${this.labelProps.fontSize}px ${this.labelProps.font}`;
+    this.ctx.font = fontStyle;
     this.ctx.textAlign = "right";
     this.ctx.textBaseline = "middle";
-    this.ctx.fillText(
-      text,
-      xOffset - this.labelProps.padding,
-      this.y + (this.height + this.padding.top) / 2
-    );
+    this.ctx.fillText(text, finalX, labelY);
     this.ctx.restore();
   }
   async animateTo(nextWidth: number, nextValue: number) {

@@ -20,6 +20,26 @@ export const random = (min: number, max: number) =>
 export const sleep = async (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export const sortDescending = (
-  data: { country: string; population: number }[]
-) => structuredClone(data).sort((a, b) => b.population - a.population);
+export const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
+/**
+ * This function using closures to cache the canvas and context objects
+ * since this function will be called multiple times inside the animation loop.
+ *
+ * @param text - The text to measure
+ * @param font - The font style to use
+ * @returns The width of the text in pixels
+ */
+export const computeTextWidth = (() => {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d")!;
+
+  return (text: string, font: string = "16px Arial") => {
+    context.font = font;
+    return context.measureText(text).width;
+  };
+})();
+
+export const formatNumber = (value: number) =>
+  new Intl.NumberFormat("en-US").format(value);

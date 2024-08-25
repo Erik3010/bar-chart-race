@@ -1,38 +1,36 @@
-import { type Dataset, type DataType, type BarChartOption } from "./types";
-import { createCanvas, sleep } from "./utility";
+import {
+  type Dataset,
+  type DataType,
+  type BarChartOption,
+  type Dimension,
+} from "./types";
+import { createCanvas, formatNumber, sleep } from "./utility";
 import { COLORS } from "./constants";
 import Bar from "./elements/Bar";
 
 class BarChart {
-  element: HTMLElement;
-  canvas: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D;
-  width: number;
-  height: number;
+  private containerElement: HTMLElement;
+  private canvas: HTMLCanvasElement;
+  private ctx: CanvasRenderingContext2D;
+  private width: number;
+  private height: number;
+  private data: DataType[];
 
-  data: DataType[];
-  timelineDates: string[] = [];
-  timelineIndex = -1;
+  private dateIndex = -1;
 
-  padding: { top: number; right: number; bottom: number; left: number };
+  private padding: { top: number; right: number; bottom: number; left: number };
+  private bars: Bar[];
 
-  bars: Bar[];
-
-  constructor(options: BarChartOption) {
-    const { element, data, width, height } = options;
-
-    this.element = element;
+  constructor({ element, data, width, height }: BarChartOption) {
+    this.containerElement = element;
+    this.data = data;
     this.width = width;
     this.height = height;
-
-    this.data = data;
-    this.timelineIndex = -1;
 
     this.canvas = createCanvas(this.width, this.height);
     this.ctx = this.canvas.getContext("2d")!;
 
-    this.padding = { top: 30, right: 30, bottom: 30, left: 100 };
-
+    this.padding = { top: 30, right: 30, bottom: 50, left: 100 };
     this.bars = [];
   }
   getDataByDate(date: Dataset["date"] | null) {
@@ -48,33 +46,37 @@ class BarChart {
       data[0]
     );
   }
-  get activeTimelineDate() {
-    if (this.timelineIndex < 0) return null;
-    return this.timelineDates[this.timelineIndex];
+  get dateLabels() {
+    if (this.data.length === 0) return [];
+    return this.data[0].datasets.map((data) => data.date);
+  }
+  get currentDate() {
+    if (this.dateIndex < 0) return null;
+    return this.dateLabels[this.dateIndex];
   }
   get currentData() {
-    return this.getDataByDate(this.activeTimelineDate);
+    return this.getDataByDate(this.currentDate);
   }
   get largestCurrentData() {
-    return this.getLargestDataByDate(this.activeTimelineDate);
+    return this.getLargestDataByDate(this.currentDate);
   }
-  get nextTimelineDate() {
-    const nextIndex = this.timelineIndex + 1;
-    if (nextIndex >= this.timelineDates.length) return null;
-    return this.timelineDates[nextIndex];
+  get nextDate() {
+    const nextIndex = this.dateIndex + 1;
+    if (nextIndex >= this.dateLabels.length) return null;
+    return this.dateLabels[nextIndex];
   }
   get nextData() {
-    if (!this.nextTimelineDate) return null;
-    return this.getDataByDate(this.nextTimelineDate);
+    if (!this.nextDate) return null;
+    return this.getDataByDate(this.nextDate);
   }
   get largestNextData() {
-    if (!this.nextTimelineDate) return null;
-    return this.getLargestDataByDate(this.nextTimelineDate);
+    if (!this.nextDate) return null;
+    return this.getLargestDataByDate(this.nextDate);
   }
-  get endTimelineDate() {
-    return this.timelineDates[this.timelineDates.length - 1];
+  get lastDate() {
+    return this.dateLabels[this.dateLabels.length - 1];
   }
-  get chartArea() {
+  get chartDimension(): Dimension {
     return {
       x: this.padding.left,
       y: this.padding.top,
@@ -83,36 +85,32 @@ class BarChart {
     };
   }
   get barHeight() {
-    return this.chartArea.height / this.data.length;
-  }
-  extractTimelineDates(): any[] {
-    return this.data[0].datasets.map(({ date }: Dataset) => date);
+    return this.chartDimension.height / this.data.length;
   }
   init() {
-    this.element.appendChild(this.canvas);
-    this.timelineDates = this.extractTimelineDates();
+    this.containerElement.appendChild(this.canvas);
 
-    this.initChart();
+    this.initBars();
     this.render();
-    this.runTimeline();
+    this.startAnimation();
   }
-  async runTimeline() {
-    while (this.nextTimelineDate) {
-      const callbacks = this.bars.map((bar) => {
+  async startAnimation() {
+    while (this.nextDate) {
+      const animations = this.bars.map((bar) => {
         const nextBarData = this.nextData?.find(
           (data) => data.label === bar.label
         );
 
         const largestNextData = Math.max(this.largestNextData!.value, 1);
-        const ratio = nextBarData!.value / largestNextData;
-        const barWidth = this.chartArea.width * ratio;
+        const widthRatio = nextBarData!.value / largestNextData;
+        const newBarWidth = this.chartDimension.width * widthRatio;
 
-        return bar.animateTo(barWidth, nextBarData!.value);
+        return bar.animateTo(newBarWidth, nextBarData!.value);
       });
-      await Promise.all(callbacks);
+      await Promise.all(animations);
       await sleep(100);
 
-      this.timelineIndex++;
+      this.dateIndex++;
     }
   }
   sortBarChart() {
@@ -133,7 +131,7 @@ class BarChart {
       }
     }
   }
-  initChart() {
+  initBars() {
     const datum = this.currentData;
     for (const [index, data] of datum.entries()) {
       const bar = this.createBar(data, index);
@@ -141,42 +139,72 @@ class BarChart {
     }
   }
   createBar(data: { label: string; value: number }, index: number) {
-    const { x, y, width } = this.chartArea;
+    const { x, y, width } = this.chartDimension;
 
     const largestCurrentData = Math.max(this.largestCurrentData.value, 1);
 
-    const ratio = data.value / largestCurrentData;
-    const barWidth = width * ratio;
-    const top = y + index * this.barHeight;
+    const widthRatio = data.value / largestCurrentData;
+    const barWidth = width * widthRatio;
+    const topPosition = y + index * this.barHeight;
 
     return new Bar({
       ctx: this.ctx,
       x,
-      y: top,
+      y: topPosition,
       width: barWidth,
       height: this.barHeight,
-      color: COLORS[index],
+      color: COLORS[index % COLORS.length],
       label: data.label,
       value: data.value,
     });
   }
-  drawTimelineLabel() {
-    const timelineLabelText = this.nextTimelineDate || this.endTimelineDate;
+  drawLabels() {
+    const currentDate = this.nextDate || this.lastDate;
+    const total = this.bars.reduce((acc, bar) => acc + bar.value, 0);
+
+    const labelX = this.width - this.padding.right;
+    const labelY = this.height - this.padding.bottom;
+
+    const bottomOffset = 32;
+
+    this.drawCounterLabel({
+      text: currentDate,
+      font: "bold 64px Arial",
+      x: labelX,
+      y: labelY - bottomOffset,
+      color: "#ccc",
+    });
+
+    this.drawCounterLabel({
+      text: `Total: ${formatNumber(total)}`,
+      font: "24px Arial",
+      x: labelX,
+      y: labelY,
+      color: "#ccc",
+    });
+  }
+  drawCounterLabel(props: {
+    text: string;
+    font: string;
+    x: number;
+    y: number;
+    color: string;
+  }) {
+    const { text, font, x, y, color } = props;
 
     this.ctx.save();
-    this.ctx.fillStyle = "#000";
-    this.ctx.font = "20px Arial";
+    this.ctx.fillStyle = color;
+    this.ctx.font = font;
     this.ctx.textAlign = "right";
-    this.ctx.textBaseline = "top";
-    this.ctx.fillText(timelineLabelText, this.width - 10, 10);
+    this.ctx.fillText(text, x, y);
     this.ctx.restore();
   }
   draw() {
     this.sortBarChart();
+    this.drawLabels();
     for (const bar of this.bars) {
       bar.draw();
     }
-    this.drawTimelineLabel();
   }
   render() {
     this.ctx.clearRect(0, 0, this.width, this.height);
