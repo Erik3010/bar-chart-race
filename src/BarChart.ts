@@ -7,6 +7,7 @@ import {
 import { createCanvas, formatNumber, sleep } from "./utility";
 import { COLORS } from "./constants";
 import Bar from "./elements/Bar";
+import TimelineBar from "./elements/TimelineBar";
 
 class BarChart {
   private containerElement: HTMLElement;
@@ -20,6 +21,7 @@ class BarChart {
 
   private padding: { top: number; right: number; bottom: number; left: number };
   private bars: Bar[];
+  private timelineBar!: TimelineBar;
 
   constructor({ element, data, width, height }: BarChartOption) {
     this.containerElement = element;
@@ -30,7 +32,7 @@ class BarChart {
     this.canvas = createCanvas(this.width, this.height);
     this.ctx = this.canvas.getContext("2d")!;
 
-    this.padding = { top: 30, right: 30, bottom: 50, left: 100 };
+    this.padding = { top: 30, right: 30, bottom: 60, left: 100 };
     this.bars = [];
   }
   getDataByDate(date: Dataset["date"] | null) {
@@ -91,6 +93,7 @@ class BarChart {
     this.containerElement.appendChild(this.canvas);
 
     this.initBars();
+    this.initTimelineBar();
     this.render();
     this.startAnimation();
   }
@@ -137,6 +140,17 @@ class BarChart {
       const bar = this.createBar(data, index);
       this.bars.push(bar);
     }
+  }
+  initTimelineBar() {
+    const bottomOffset = 25;
+    const coordinateY = this.height - this.padding.bottom + bottomOffset;
+
+    this.timelineBar = new TimelineBar({
+      ctx: this.ctx,
+      start: { x: this.padding.left, y: coordinateY },
+      end: { x: this.width - this.padding.right, y: coordinateY },
+      labels: this.dateLabels,
+    });
   }
   createBar(data: { label: string; value: number }, index: number) {
     const { x, y, width } = this.chartDimension;
@@ -205,6 +219,7 @@ class BarChart {
     for (const bar of this.bars) {
       bar.draw();
     }
+    this.timelineBar.draw();
   }
   render() {
     this.ctx.clearRect(0, 0, this.width, this.height);

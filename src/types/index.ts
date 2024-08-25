@@ -12,6 +12,11 @@ export interface Padding {
   left: number;
 }
 
+export interface Coordinate {
+  x: number;
+  y: number;
+}
+
 export interface Dataset {
   date: string;
   value: number;
@@ -46,7 +51,9 @@ export interface BarOption extends Drawable {
 }
 
 export interface TimelineBarOption extends Drawable {
-  chartDimension: Dimension;
+  start: Coordinate;
+  end: Coordinate;
+  labels: string[];
 }
 
 export interface DrawBarLabelOption {
