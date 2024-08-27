@@ -1,12 +1,17 @@
 import { Coordinate, TimelineBarOption } from "../types";
 
 class TimelineBar {
+  static POINTER_WIDTH = 10;
+  static POINTER_OFFSET = 8;
+
   ctx: CanvasRenderingContext2D;
   start: Coordinate;
   end: Coordinate;
   labels: string[];
+  pointerCoordinate: Coordinate = { x: 0, y: 0 };
 
   strokeColor = "#ccc";
+  pointerColor = "#ababab";
   textColor = "#9b9b9b";
   fractionLineOffset = 5;
 
@@ -15,8 +20,35 @@ class TimelineBar {
     this.start = start;
     this.end = end;
     this.labels = labels;
+
+    this.pointerCoordinate = { x: start.x, y: start.y };
   }
-  drawPointer() {}
+  calculatePointerPoints() {
+    const { POINTER_WIDTH, POINTER_OFFSET } = TimelineBar;
+    const { x, y } = this.pointerCoordinate;
+
+    const halfWidth = POINTER_WIDTH / 2;
+    const adjustedY = y - POINTER_OFFSET;
+    const topPointY = adjustedY - POINTER_WIDTH;
+
+    return {
+      bottomPoint: { x: x, y: adjustedY },
+      leftPoint: { x: x - halfWidth, y: topPointY },
+      rightPoint: { x: x + halfWidth, y: topPointY },
+    };
+  }
+  drawPointer() {
+    const { bottomPoint, leftPoint, rightPoint } =
+      this.calculatePointerPoints();
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(bottomPoint.x, bottomPoint.y);
+    this.ctx.lineTo(leftPoint.x, leftPoint.y);
+    this.ctx.lineTo(rightPoint.x, rightPoint.y);
+    this.ctx.fillStyle = this.pointerColor;
+    this.ctx.fill();
+    this.ctx.closePath();
+  }
   drawFractionLine() {
     for (const [index, label] of this.labels.entries()) {
       const fraction = index / (this.labels.length - 1);
