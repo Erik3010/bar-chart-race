@@ -23,7 +23,7 @@ class TimelineBar {
 
     this.pointerCoordinate = { x: start.x, y: start.y };
   }
-  calculatePointerPoints() {
+  calculatePointerCoordinate() {
     const { POINTER_WIDTH, POINTER_OFFSET } = TimelineBar;
     const { x, y } = this.pointerCoordinate;
 
@@ -39,7 +39,7 @@ class TimelineBar {
   }
   drawPointer() {
     const { bottomPoint, leftPoint, rightPoint } =
-      this.calculatePointerPoints();
+      this.calculatePointerCoordinate();
 
     this.ctx.beginPath();
     this.ctx.moveTo(bottomPoint.x, bottomPoint.y);
