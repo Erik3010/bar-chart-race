@@ -61,7 +61,6 @@ export const animate = <T extends Record<string, number>>({
       onUpdate(newValues);
       requestAnimationFrame(animate);
     };
-
     animate();
   });
 };
