@@ -1,4 +1,5 @@
 import { Coordinate, TimelineBarOption } from "../types";
+import { animate } from "../utility/animation";
 
 class TimelineBar {
   static POINTER_WIDTH = 10;
@@ -8,12 +9,13 @@ class TimelineBar {
   start: Coordinate;
   end: Coordinate;
   labels: string[];
+  percentage = 0;
   pointerCoordinate: Coordinate = { x: 0, y: 0 };
 
   strokeColor = "#ccc";
   pointerColor = "#ababab";
   textColor = "#9b9b9b";
-  fractionLineOffset = 5;
+  lineOffsetFraction = 5;
 
   constructor({ ctx, start, end, labels }: TimelineBarOption) {
     this.ctx = ctx;
@@ -21,7 +23,17 @@ class TimelineBar {
     this.end = end;
     this.labels = labels;
 
-    this.pointerCoordinate = { x: start.x, y: start.y };
+    this.updatePointerCoordinate();
+  }
+  set percentageValue(value: number) {
+    this.percentage = value;
+    this.updatePointerCoordinate();
+  }
+  get startX() {
+    return this.start.x + (this.end.x - this.start.x) * this.percentage;
+  }
+  private updatePointerCoordinate() {
+    this.pointerCoordinate = { x: this.startX, y: this.start.y };
   }
   calculatePointerCoordinate() {
     const { POINTER_WIDTH, POINTER_OFFSET } = TimelineBar;
@@ -55,8 +67,8 @@ class TimelineBar {
       const x = this.start.x + (this.end.x - this.start.x) * fraction;
 
       this.ctx.beginPath();
-      this.ctx.moveTo(x, this.start.y - this.fractionLineOffset);
-      this.ctx.lineTo(x, this.start.y + this.fractionLineOffset);
+      this.ctx.moveTo(x, this.start.y - this.lineOffsetFraction);
+      this.ctx.lineTo(x, this.start.y + this.lineOffsetFraction);
       this.ctx.strokeStyle = this.strokeColor;
       this.ctx.stroke();
       this.ctx.closePath();
@@ -81,6 +93,19 @@ class TimelineBar {
     this.drawMainBar();
     this.drawFractionLine();
     this.drawPointer();
+  }
+  async animateTo(index: number) {
+    const step = 100 / (this.labels.length - 1);
+    const percentage = (index * step) / 100;
+
+    await animate<{ percentage: number }>({
+      duration: 2500,
+      initialValues: { percentage: this.percentage },
+      targetValues: { percentage },
+      onUpdate: ({ percentage }) => (this.percentageValue = percentage),
+    });
+
+    this.percentage = percentage;
   }
 }
 

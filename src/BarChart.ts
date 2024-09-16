@@ -89,6 +89,9 @@ class BarChart {
   get barHeight() {
     return this.chartDimension.height / this.data.length;
   }
+  get isInitialAnimation() {
+    return this.dateIndex === -1;
+  }
   init() {
     this.containerElement.appendChild(this.canvas);
 
@@ -110,7 +113,11 @@ class BarChart {
 
         return bar.animateTo(newBarWidth, nextBarData!.value);
       });
-      await Promise.all(animations);
+
+      const timelineAnimations = !this.isInitialAnimation
+        ? [this.timelineBar.animateTo(this.dateIndex + 1)]
+        : [];
+      await Promise.all([...animations, ...timelineAnimations]);
       await sleep(100);
 
       this.dateIndex++;
@@ -173,16 +180,15 @@ class BarChart {
     });
   }
   drawLabels() {
-    const currentDate = this.nextDate || this.lastDate;
-    const total = this.bars.reduce((acc, bar) => acc + bar.value, 0);
+    if (this.isInitialAnimation) return;
 
+    const total = this.bars.reduce((acc, bar) => acc + bar.value, 0);
     const labelX = this.width - this.padding.right;
     const labelY = this.height - this.padding.bottom;
-
     const bottomOffset = 32;
 
     this.drawCounterLabel({
-      text: currentDate,
+      text: this.currentDate || "",
       font: "bold 64px Arial",
       x: labelX,
       y: labelY - bottomOffset,
@@ -224,6 +230,7 @@ class BarChart {
   render() {
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.draw();
+
     requestAnimationFrame(this.render.bind(this));
   }
 }
