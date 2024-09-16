@@ -1,6 +1,6 @@
-import "./styles/index.css";
-import data from "./data/data.json";
-import BarChart from "./BarChart";
+import "../styles/index.css";
+import data from "../data/data.json";
+import BarChart from "@/index";
 
 const barChart = new BarChart({
   data,

@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "demo": "vite --config demo/vite.config.ts",
+    "demo:build": "tsc && vite build --config demo/vite.config.ts",
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/node": "^22.5.5",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
   }
