@@ -77,9 +77,9 @@ class Bar {
     this.ctx.fillText(text, finalX, labelY);
     this.ctx.restore();
   }
-  async animateTo(nextWidth: number, nextValue: number) {
+  async animateTo(nextWidth: number, nextValue: number, duration: number) {
     await animate<{ width: number; value: number }>({
-      duration: 2500,
+      duration,
       initialValues: { width: this.width, value: this.value },
       targetValues: { width: nextWidth, value: nextValue },
       onUpdate: ({ width, value }) => {

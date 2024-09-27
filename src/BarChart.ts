@@ -111,7 +111,11 @@ class BarChart {
         const widthRatio = nextBarData!.value / largestNextData;
         const newBarWidth = this.chartDimension.width * widthRatio;
 
-        return bar.animateTo(newBarWidth, nextBarData!.value);
+        return bar.animateTo(
+          newBarWidth,
+          nextBarData!.value,
+          this.isInitialAnimation ? 1500 : 2500
+        );
       });
 
       const timelineAnimations = !this.isInitialAnimation
