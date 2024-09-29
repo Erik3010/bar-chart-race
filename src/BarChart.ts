@@ -23,7 +23,7 @@ class BarChart {
   private bars: Bar[];
   private timelineBar!: TimelineBar;
 
-  constructor({ element, data, width, height }: BarChartOption) {
+  constructor(data: DataType[], { element, width, height }: BarChartOption) {
     this.containerElement = element;
     this.data = data;
     this.width = width;
