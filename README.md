@@ -50,6 +50,6 @@ const chart = new BarChartRace(data, {
 chart.init();
 ```
 
-# Documentation
+## Documentation
 
 TBA
