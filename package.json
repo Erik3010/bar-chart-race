@@ -1,8 +1,24 @@
 {
   "name": "bar-chart-race",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "1.0.0",
+  "description": "A TypeScript library for creating smooth animated bar chart races by utilizing the HTML5 Canvas API to render high-performance graphics.",
+  "main": "dist/bar-chart-race.cjs.js",
+  "module": "dist/bar-chart-race.es.js",
+  "unpkg": "dist/bar-chart-race.umd.js",
+  "jsdelivr": "dist/bar-chart-race.umd.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Erik3010/bar-chart-race.git"
+  },
+  "keywords": [
+    "bar",
+    "chart"
+  ],
+  "bugs": {
+    "url": "https://github.com/Erik3010/bar-chart-race/issues"
+  },
+  "homepage": "https://github.com/Erik3010/bar-chart-race#readme",
+  "author": "Erik Hau",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
