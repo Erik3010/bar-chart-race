@@ -1,6 +1,6 @@
 # Bar Chart Race Library
 
-![Preview](https://github.com/Erik3010/bar-chart-race/blob/1bb0cc177a986b84150a2a9c51103089b9f28d87/demo/preview/preview.mov)
+![preview](https://github.com/user-attachments/assets/e2b00fe1-a658-4120-9d10-0d3fadbc5d20)
 
 An open-source Bar Chart Race library built with TypeScript. This library allows you to create a smooth animated bar chart races effortlessly. It works by utilizing the HTML5 Canvas API to render the graphics, providing high performance.
 
