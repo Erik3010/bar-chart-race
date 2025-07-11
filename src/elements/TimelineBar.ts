@@ -17,14 +17,132 @@ class TimelineBar {
   textColor = "#9b9b9b";
   lineOffsetFraction = 5;
 
-  constructor({ ctx, start, end, labels }: TimelineBarOption) {
+  // New properties for interaction
+  private isDragging = false;
+  private canvas: HTMLCanvasElement;
+  private onPercentageChange?: (percentage: number) => void;
+
+  constructor({
+    ctx,
+    start,
+    end,
+    labels,
+    onPercentageChange,
+  }: TimelineBarOption & {
+    onPercentageChange?: (percentage: number) => void;
+  }) {
     this.ctx = ctx;
     this.start = start;
     this.end = end;
     this.labels = labels;
+    this.onPercentageChange = onPercentageChange;
+    this.canvas = ctx.canvas;
 
     this.updatePointerCoordinate();
+    this.setupEventListeners();
   }
+
+  private setupEventListeners() {
+    this.canvas.addEventListener("mousedown", this.handleMouseDown.bind(this));
+    this.canvas.addEventListener("mousemove", this.handleMouseMove.bind(this));
+    this.canvas.addEventListener("mouseup", this.handleMouseUp.bind(this));
+    this.canvas.addEventListener("mouseleave", this.handleMouseUp.bind(this));
+
+    // Touch events for mobile support
+    this.canvas.addEventListener(
+      "touchstart",
+      this.handleTouchStart.bind(this)
+    );
+    this.canvas.addEventListener("touchmove", this.handleTouchMove.bind(this));
+    this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this));
+  }
+
+  private getCanvasCoordinates(clientX: number, clientY: number): Coordinate {
+    const rect = this.canvas.getBoundingClientRect();
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top,
+    };
+  }
+
+  private isPointOnTimeline(x: number, y: number): boolean {
+    const tolerance = 20; // pixels
+    return (
+      x >= this.start.x - tolerance &&
+      x <= this.end.x + tolerance &&
+      y >= this.start.y - tolerance &&
+      y <= this.start.y + tolerance
+    );
+  }
+
+  private handleMouseDown(event: MouseEvent) {
+    const coords = this.getCanvasCoordinates(event.clientX, event.clientY);
+    if (this.isPointOnTimeline(coords.x, coords.y)) {
+      this.isDragging = true;
+      this.canvas.style.cursor = "grabbing";
+      this.updateFromPosition(coords.x);
+    }
+  }
+
+  private handleMouseMove(event: MouseEvent) {
+    const coords = this.getCanvasCoordinates(event.clientX, event.clientY);
+
+    if (this.isDragging) {
+      this.updateFromPosition(coords.x);
+    } else if (this.isPointOnTimeline(coords.x, coords.y)) {
+      this.canvas.style.cursor = "grab";
+    } else {
+      this.canvas.style.cursor = "default";
+    }
+  }
+
+  private handleMouseUp() {
+    this.isDragging = false;
+    this.canvas.style.cursor = "default";
+  }
+
+  private handleTouchStart(event: TouchEvent) {
+    event.preventDefault();
+    const touch = event.touches[0];
+    const coords = this.getCanvasCoordinates(touch.clientX, touch.clientY);
+    if (this.isPointOnTimeline(coords.x, coords.y)) {
+      this.isDragging = true;
+      this.updateFromPosition(coords.x);
+    }
+  }
+
+  private handleTouchMove(event: TouchEvent) {
+    event.preventDefault();
+    if (this.isDragging) {
+      const touch = event.touches[0];
+      const coords = this.getCanvasCoordinates(touch.clientX, touch.clientY);
+      this.updateFromPosition(coords.x);
+    }
+  }
+
+  private handleTouchEnd(event: TouchEvent) {
+    event.preventDefault();
+    this.isDragging = false;
+  }
+
+  private updateFromPosition(x: number) {
+    // Clamp x to timeline bounds
+    const clampedX = Math.max(this.start.x, Math.min(this.end.x, x));
+
+    // Calculate percentage (allow any value between 0 and 1)
+    const newPercentage =
+      (clampedX - this.start.x) / (this.end.x - this.start.x);
+
+    // Update percentage without snapping
+    this.percentage = newPercentage;
+    this.updatePointerCoordinate();
+
+    // Notify parent component of percentage change
+    if (this.onPercentageChange) {
+      this.onPercentageChange(this.percentage);
+    }
+  }
+
   set percentageValue(value: number) {
     this.percentage = value;
     this.updatePointerCoordinate();
@@ -106,6 +224,17 @@ class TimelineBar {
     });
 
     this.percentage = percentage;
+  }
+
+  // Method to set percentage directly without animation
+  setPercentage(percentage: number) {
+    this.percentage = Math.max(0, Math.min(1, percentage));
+    this.updatePointerCoordinate();
+  }
+
+  // Method to get current percentage
+  getCurrentPercentage(): number {
+    return this.percentage;
   }
 }
 

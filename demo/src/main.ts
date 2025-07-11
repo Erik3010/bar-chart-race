@@ -7,4 +7,5 @@ const barChart = new BarChart(data, {
   height: 400,
   element: document.querySelector("#app")!,
 });
+
 barChart.init();
