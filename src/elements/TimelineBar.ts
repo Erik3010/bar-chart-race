@@ -43,18 +43,18 @@ class TimelineBar {
   }
 
   private setupEventListeners() {
-    this.canvas.addEventListener("mousedown", this.handleMouseDown.bind(this));
-    this.canvas.addEventListener("mousemove", this.handleMouseMove.bind(this));
-    this.canvas.addEventListener("mouseup", this.handleMouseUp.bind(this));
-    this.canvas.addEventListener("mouseleave", this.handleMouseUp.bind(this));
+    this.canvas.addEventListener("mousedown", this.boundHandleMouseDown);
+    this.canvas.addEventListener("mousemove", this.boundHandleMouseMove);
+    this.canvas.addEventListener("mouseup", this.boundHandleMouseUp);
+    this.canvas.addEventListener("mouseleave", this.boundHandleMouseUp);
 
     // Touch events for mobile support
     this.canvas.addEventListener(
-      "touchstart",
-      this.handleTouchStart.bind(this)
-    );
-    this.canvas.addEventListener("touchmove", this.handleTouchMove.bind(this));
-    this.canvas.addEventListener("touchend", this.handleTouchEnd.bind(this));
+    this.canvas.addEventListener("touchstart", this.boundHandleTouchStart);
+    this.canvas.addEventListener("touchstart", this.boundHandleTouchStart);
+    this.canvas.addEventListener("touchstart", this.boundHandleTouchStart);
+    this.canvas.addEventListener("touchmove", this.boundHandleTouchMove);
+    this.canvas.addEventListener("touchend", this.boundHandleTouchEnd);
   }
 
   private getCanvasCoordinates(clientX: number, clientY: number): Coordinate {
